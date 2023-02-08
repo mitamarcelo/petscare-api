@@ -4,41 +4,87 @@ module ErrorHandler
   included do
     rescue_from ActiveRecord::RecordNotFound, with: :record_not_found
     rescue_from ActiveRecord::RecordInvalid, with: :record_invalid
+    rescue_from ActiveRecord::NotNullViolation, with: :database_violation
     rescue_from ActiveRecord::RecordNotDestroyed, with: :record_not_destroyed
-    rescue_from AuthenticationError::Unauthorized, with: :unauthorized
-    rescue_from AuthenticationError::CredentialInvalid, with: :credential_invalid
-    rescue_from AuthenticationError::AlreadySignedOut, with: :already_signed_out
+    rescue_from CustomError::Unauthorized, with: :unauthorized
+    rescue_from CustomError::CredentialInvalid, with: :credential_invalid
     rescue_from JWT::ExpiredSignature, JWT::VerificationError, JWT::DecodeError, JWT::InvalidIssuerError,
                 with: :jwt_invalid
+    # rescue_from StandardError, with: :standard_error
+  end
+
+  class CustomStandardError
+    attr_reader :title, :details, :status
+
+    def initialize(title:, details:, status:)
+      @title = title || 'Something went wrong'
+      @details = details || ['There were an error while processing your request, our development team has been notificated!']
+      @status = status || 500
+    end
   end
 
   # private
 
   def record_not_found(err)
-    render json: { error: { type: :record_not_found, message: err.to_s } }, status: :not_found
+    @error = CustomStandardError.new(
+      title: 'Not found error',
+      details: [err.to_s],
+      status: 404
+    )
+    render 'errors/error', status: @error.status
   end
 
   def record_invalid(err)
-    render json: { error: { type: :record_invalid, validations: err.record.errors } }, status: :unprocessable_entity
+    @error = CustomStandardError.new(
+      title: 'Invalid Record',
+      details: err.record.errors.to_a,
+      status: 422
+    )
+    render 'errors/error', status: @error.status
+  end
+
+  def database_violation(err)
+    @error = CustomStandardError.new(
+      title: 'Database violation',
+      details: err.to_s,
+      status: 422
+    )
+    render 'errors/error', status: @error.status
   end
 
   def record_not_destroyed(err)
-    render json: { error: { type: :record_not_destroyed, message: err.to_s } }, status: :unprocessable_entity
+    @error = CustomStandardError.new(
+      title: 'Record not destroyed',
+      details: [err.to_s],
+      status: 422
+    )
+    render 'errors/error', status: @error.status
   end
 
   def unauthorized(err)
-    render json: { error: { type: :unauthorized, message: err.to_s } }, status: :unauthorized
+    @error = CustomStandardError.new(
+      title: 'Unauthorized',
+      details: [err.to_s],
+      status: 401
+    )
+    render 'errors/error', status: @error.status
   end
 
   def credential_invalid(err)
-    render json: { error: { type: :credential_invalid, message: err.to_s } }, status: :unprocessable_entity
+    @error = CustomStandardError.new(
+      title: 'Invalid credentials',
+      details: [err.to_s],
+      status: 401
+    )
+    render 'errors/error', status: @error.status
   end
 
-  def jwt_invalid(_err)
-    render json: { errors: { type: :jwt_invalid, message: 'Invalid JWT' } }, status: :unauthorized
-  end
-
-  def already_signed_out(_err)
-    render json: { errors: { type: :already_signed_out, message: 'Already signed out' } }, status: :unauthorized
+  def jwt_invalid(err)
+    @error = CustomStandardError.new(
+      title: 'Invalid JWT',
+      details: [err.to_s],
+      status: 401
+    )
+    render 'errors/error', status: @error.status
   end
 end

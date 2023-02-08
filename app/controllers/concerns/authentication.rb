@@ -8,10 +8,10 @@ module Authentication
   def authenticate_user!
     jwt_payload = process_authorization_token
 
-    raise AuthenticationError::Unauthorized, 'Access Token: User identifier missing' unless jwt_payload['jti']
+    raise CustomError::Unauthorized, 'Access Token: User identifier missing' unless jwt_payload['jti']
 
     @current_user = User.find_by_jti(jwt_payload['jti'])
-    raise AuthenticationError::Unauthorized, 'Access Token: User identifier invalid' unless @current_user.present?
+    raise CustomError::Unauthorized, 'Access Token: User identifier invalid' unless @current_user.present?
   end
 
   def invalidate_user!
@@ -35,7 +35,7 @@ module Authentication
 
   def process_authorization_token
     token = request.headers['Authorization']
-    raise AuthenticationError::Unauthorized, 'Authorization not provided' unless token.present?
+    raise CustomError::Unauthorized, 'Authorization not provided' unless token.present?
 
     jwt = token.split(' ').last
     JWT.decode(jwt, Rails.application.credentials.devise_jwt_secret_key!).first

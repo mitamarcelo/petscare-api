@@ -10,7 +10,30 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_02_06_233621) do
+ActiveRecord::Schema[7.0].define(version: 2023_02_07_170036) do
+  create_table "pets", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.string "name"
+    t.text "bio"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_pets_on_user_id"
+  end
+
+  create_table "procedure_records", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.string "category", default: "appointment", null: false
+    t.string "title", null: false
+    t.text "description"
+    t.date "procedure_on", null: false
+    t.datetime "next_procedure_date"
+    t.bigint "pet_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["category"], name: "index_procedure_records_on_category"
+    t.index ["next_procedure_date"], name: "index_procedure_records_on_next_procedure_date"
+    t.index ["pet_id"], name: "index_procedure_records_on_pet_id"
+  end
+
   create_table "users", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "email", default: "", null: false
     t.string "encrypted_password", default: "", null: false
@@ -26,4 +49,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_02_06_233621) do
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
+  add_foreign_key "pets", "users"
+  add_foreign_key "procedure_records", "pets"
 end

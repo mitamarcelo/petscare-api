@@ -16,7 +16,7 @@ class SessionsController < Devise::SessionsController
   def authenticate_credentials!(email, password)
     user = User.find_by_email(email)
     if user.nil? || !user.valid_password?(password)
-      raise AuthenticationError::CredentialInvalid,
+      raise CustomError::CredentialInvalid,
             'Email or password invalid'
     end
 

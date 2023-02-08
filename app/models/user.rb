@@ -4,6 +4,8 @@ class User < ApplicationRecord
          :recoverable, :rememberable, :validatable,
          :jwt_authenticatable, jwt_revocation_strategy: self
 
+  has_many :pets
+
   def jwt_payload
     { jti:, user: { name:, email: }, exp: 1.days.from_now.to_i }
   end
