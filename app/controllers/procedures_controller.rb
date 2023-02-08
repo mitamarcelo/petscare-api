@@ -1,7 +1,7 @@
 class ProceduresController < ApplicationController
   include PetsConcern
   before_action :authenticate_user!
-  before_action :set_pet
+  before_action :set_pet, except: %i[categories]
   before_action :set_procedure_record, only: %i[show update destroy]
 
   def index
