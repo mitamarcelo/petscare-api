@@ -26,10 +26,16 @@ class PetsController < ApplicationController
     head :no_content
   end
 
+  def options
+    @genders = Pet.genders.map { |gen| gen[0] }
+    @species = Pet.species.map { |spe| spe[0] }
+    render 'pets/options'
+  end
+
   private
 
   def pet_params
-    params.require(:pet).permit(:name, :bio)
+    params.require(:pet).permit(:name, :bio, :breed, :species, :gender, :dob)
   end
 
   def set_pet

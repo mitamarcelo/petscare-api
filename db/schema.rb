@@ -10,13 +10,17 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_02_07_170036) do
+ActiveRecord::Schema[7.0].define(version: 2023_02_17_171141) do
   create_table "pets", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.string "name"
     t.text "bio"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "breed"
+    t.string "species", default: "dog"
+    t.string "gender", default: "male"
+    t.date "dob"
     t.index ["user_id"], name: "index_pets_on_user_id"
   end
 
