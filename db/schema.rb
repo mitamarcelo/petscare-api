@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_02_17_171141) do
+ActiveRecord::Schema[7.0].define(version: 2023_04_11_214859) do
   create_table "pets", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.string "name"
@@ -33,9 +33,11 @@ ActiveRecord::Schema[7.0].define(version: 2023_02_17_171141) do
     t.bigint "pet_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.float "weight"
     t.index ["category"], name: "index_procedure_records_on_category"
     t.index ["next_procedure_date"], name: "index_procedure_records_on_next_procedure_date"
     t.index ["pet_id"], name: "index_procedure_records_on_pet_id"
+    t.index ["procedure_on"], name: "index_procedure_records_on_procedure_on"
   end
 
   create_table "users", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
